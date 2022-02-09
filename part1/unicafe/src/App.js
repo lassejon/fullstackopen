@@ -26,34 +26,36 @@ const App = () => {
   const [average, setAverage] = useState(0)
   const [positivePercentage, setPositivePercentage] = useState(0)
 
-  const total = good + neutral + bad;
-  const totalAmount = total !== 0 ? total : 1;
-
   const voteEvent = (vote) => () => {
-    const score = { good: 1, neutral: 0, bad: -1}
-    let averageCalculated = (score.good * good + bad * score.bad) / totalAmount
-    let setVote;
-    let goodUpdated = good;
+  const score = { good: 1, neutral: 0, bad: -1}
+  let goodUpdate = good;
+  let neutralUpdate = neutral;
+  let badUpdate = bad;
+  let setValue;
 
-    switch (vote) {
-      case "good":
-        setVote = setGood(good + 1);
-        goodUpdated = setVote;
-        break;
-      case "neutral": 
-        setVote = setNeutral(neutral + 1);
-        break;
-      case "bad":
-        setVote = setBad(bad + 1);
-        break;
-      default:
-        break;
-    }
-
-    totalAmount =+ 1;
-
-    return setVote, setAverage(averageCalculated), setPositivePercentage(goodUpdated / totalAmount * 100);
+  switch (vote) {
+    case "good":
+      goodUpdate =+ 1;
+      setValue = setGood(good + 1);
+      break;
+    case "neutral":
+      neutralUpdate =+ 1
+      setValue = setNeutral(neutral + 1);
+      break;
+    case "bad":
+      badUpdate =+ 1
+      setValue = setBad(bad + 1);
+      break;
+    default:
+      break;
   }
+
+  const total = goodUpdate + neutralUpdate + badUpdate;
+  const totalAmount = total !== 0 ? total : 1;
+  const averageCalculated = (score.good * goodUpdate + badUpdate * score.bad) / totalAmount;
+
+  return setValue, setAverage(averageCalculated), setPositivePercentage(goodUpdate / totalAmount * 100);
+}
 
   const goodStr = "good";
   const neutralStr = "neutral";
