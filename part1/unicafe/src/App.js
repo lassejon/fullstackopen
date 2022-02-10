@@ -2,17 +2,30 @@ import React, { useState } from 'react'
 
 const Button = ( {text, onClick} ) => (<button onClick={onClick}>{text}</button>)
 
-const StatisticLine = ( { text, stat } ) => (<div>{text} {stat}</div>)
+const StatisticLine = ( { text, stat } ) => {
+  return (
+    <tr><td>{text}</td><td>{stat}</td></tr>
+  )
+}
 
-const Statistics= ( { text, stat } ) => (
-  <div>
-    <StatisticLine text={text.goodStr} stat={stat.good} />
-    <StatisticLine text={text.neutralStr} stat={stat.neutral} />
-    <StatisticLine text={text.badStr} stat={stat.bad} />
-    <StatisticLine text={"average"} stat={stat.average}/>
-    <StatisticLine text={"positive"} stat={stat.positivePercentage}/>
-  </div>  
-)
+const Statistics= ( { text, stat } ) => {
+  if (0 === stat.good + stat.bad + stat.neutral) {
+    return (<div>No feedback given</div>)
+  }
+  else {
+    return (
+      <table>
+        <tbody>
+          <StatisticLine text={text.goodStr} stat={stat.good} />
+          <StatisticLine text={text.neutralStr} stat={stat.neutral} />
+          <StatisticLine text={text.badStr} stat={stat.bad} />
+          <StatisticLine text={"average"} stat={stat.average}/>
+          <StatisticLine text={"positive"} stat={stat.positivePercentage}/>
+        </tbody>  
+      </table>
+    )
+  }
+}
 
 const Average = ( { average } ) => (<div>average {average}</div>);
 
@@ -27,42 +40,37 @@ const App = () => {
   const [positivePercentage, setPositivePercentage] = useState(0)
 
   const voteEvent = (vote) => () => {
-  const score = { good: 1, neutral: 0, bad: -1}
-  let goodUpdate = good;
-  let neutralUpdate = neutral;
-  let badUpdate = bad;
-  let setValue;
+    const score = { good: 1, neutral: 0, bad: -1}
 
-  switch (vote) {
-    case "good":
-      goodUpdate =+ 1;
-      setValue = setGood(good + 1);
-      break;
-    case "neutral":
-      neutralUpdate =+ 1
-      setValue = setNeutral(neutral + 1);
-      break;
-    case "bad":
-      badUpdate =+ 1
-      setValue = setBad(bad + 1);
-      break;
-    default:
-      break;
+    let setValue;
+
+    switch (vote) {
+      case "good":
+        setValue = setGood(good + 1);
+        break;
+      case "neutral":
+        setValue = setNeutral(neutral + 1);
+        break;
+      case "bad":
+        setValue = setBad(bad + 1);
+        break;
+      default:
+        break;
+    }
+
+    let total = good+ neutral + bad;
+    let totalAmount = total !== 0 ? total : 1;
+    let averageCalculated = (score.good * good + bad * score.bad) / totalAmount;
+
+    return setValue, setAverage(averageCalculated), setPositivePercentage(good / totalAmount * 100);
   }
-
-  const total = goodUpdate + neutralUpdate + badUpdate;
-  const totalAmount = total !== 0 ? total : 1;
-  const averageCalculated = (score.good * goodUpdate + badUpdate * score.bad) / totalAmount;
-
-  return setValue, setAverage(averageCalculated), setPositivePercentage(goodUpdate / totalAmount * 100);
-}
 
   const goodStr = "good";
   const neutralStr = "neutral";
   const badStr = "bad";
 
   return (
-    <div>
+    <>
       <h1>give feedback</h1>
       <Button onClick={voteEvent(goodStr)} text={goodStr} />
       <Button onClick={voteEvent(neutralStr)} text={neutralStr}/>
@@ -71,7 +79,7 @@ const App = () => {
       <Statistics text={ {goodStr: goodStr, neutralStr: neutralStr, badStr: badStr} }
                   stat={ {good: good, neutral: neutral, bad: bad, average: average, 
                           positivePercentage: positivePercentage} } />
-    </div>
+    </>
   )
 }
 
