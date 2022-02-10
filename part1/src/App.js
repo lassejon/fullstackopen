@@ -26,7 +26,7 @@ const History = ({allClicks}) => {
 const App = () => {
   const [value, setValue] = useState(10)
 
-  const setToValue = (newValue) => () => {
+  const setToValue = newValue => () => {
     setValue(newValue)
   }
 
