@@ -1,6 +1,7 @@
 import axios from "axios"
 import Search from "./components/Search"
 import Countries from "./components/Countries"
+import Country from "./components/Country"
 import React, { useState, useEffect } from "react";
 
 function App() {
@@ -35,23 +36,19 @@ function App() {
     if (showCountries.length > 10 && newSearch.length >= 1) {
       return <p>Too many matches, specify another filter</p>
     } 
+
     if (showCountries.length === 1) {
-      const country = showCountries[0];
-      const languages = Object.entries(country.languages).map(element => {
-        return <li>{element[1]}</li>
-      });
-      return <div>
-              <h1>{country.name.common}</h1>
-              <p>capital {country.capital}</p>
-              <p>area {country.area}</p>
-              <h3>languages:</h3>
-              <ul>
-                {languages}
-              </ul>
-            </div>
+      const country = showCountries[0];  
+      return (
+        <Country 
+          country={country}
+          countries={countries}
+          setShowCountries={setShowCountries}
+        />)
     }
+
     else {
-      return <Countries countries={showCountries} />
+      return <Countries countries={showCountries} setShowCountries={setShowCountries}/>
     }
   }
 

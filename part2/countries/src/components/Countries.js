@@ -1,13 +1,21 @@
 import React from 'react'
 
-const Countries = ( {countries} ) => {
+const Countries = ( {countries, setShowCountries} ) => {
+  
   return (
     <div>
-      {countries.map(country => 
-        <div key={country.cca2}>
-          {country.name.common}
-        </div>
-      )}
+      {countries.map(country => {
+        const setCountriesAll = () => {
+          setShowCountries([ country ])
+        }
+        
+        return (
+          <div key={country.cca2}>
+            {country.name.common}
+            <button onClick={setCountriesAll}>show</button>
+          </div>
+        )
+      })}
     </div>
   )
 }

@@ -11,6 +11,7 @@ const App = () => {
   const [newNumber, setNewNumber] = useState('')
   const [newSearch, setNewSearch] = useState('')
   const [showPersons, setShowPersons] = useState(persons)
+  console.log("asdasd");
 
   const hook = () => {
     console.log('effect')
@@ -88,7 +89,8 @@ const App = () => {
         persons={showPersons}
       />
       
-  </div>)
+    </div>
+  )
 }
 
 export default App
