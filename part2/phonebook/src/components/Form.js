@@ -1,11 +1,11 @@
 import React from 'react'
 
 const Form = ( 
-  {updatePersons, newName, newNumber,
+  {createPerson, newName, newNumber,
    handleNameCHange, handleNumberCHange} 
 ) => {
   return (
-    <form onSubmit={updatePersons}>
+    <form onSubmit={createPerson}>
       <div>
         name: 
         <input 

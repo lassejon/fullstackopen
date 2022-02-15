@@ -2,49 +2,74 @@ import React, { useState, useEffect } from 'react'
 import Filter from "./components/Filter"
 import Form from "./components/Form"
 import Phonebook from "./components/Phonebook"
-import axios from "axios"
+import peopleService from "./services/people"
 
 const App = () => {
 
-  const [persons, setPersons] = useState([])
+  const [people, setPeople] = useState([])
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
   const [newSearch, setNewSearch] = useState('')
-  const [showPersons, setShowPersons] = useState(persons)
-  console.log("asdasd");
+  const [showPeople, setShowPeople] = useState(people)
 
-  const hook = () => {
-    console.log('effect')
-    axios
-      .get('http://localhost:3001/persons')
-      .then(response => {
-        console.log('promise fulfilled')
-        setPersons(response.data)
-        setShowPersons(response.data)
+  useEffect(() => {
+    peopleService
+      .getAll()
+      .then(initialPeople => {
+        console.log(initialPeople);
+        setPeople(initialPeople)
+        setShowPeople(initialPeople)
       })
-  }
-  
-  useEffect(hook, [])
+      .catch(error => {
+        console.log(error)
+      })
+  }, [])
 
-  const updatePersons = (event) => {
+  const createPerson = (event) => {
     event.preventDefault();
 
     const person = {
       name: newName,
-      id: persons.length + 1,
       number: newNumber
     }
 
-    if (persons.filter(p => p.name === newName).length > 0) {
-      alert(`${newName} is already added to phonebook`)
+    const samePerson = 
+      people.find(p => p.name.toLowerCase() === newName.toLocaleLowerCase())
+
+    if (samePerson !== undefined) {
+      person.id = samePerson.id
+      person.name = samePerson.name
+
+      if(window.confirm(`${newName} is already added to phonebook, replace the old number with a new one?`)) {
+        peopleService
+          .update(person)
+          .then(returnedPerson => {
+            const updatedPeople = people.map(p => p.id !== person.id ? p : returnedPerson)
+            setPeople(updatedPeople)
+            setShowPeople(updatedPeople)
+          })
+          .catch(error => {
+            console.log(samePerson)
+            console.log(person);
+            console.log(error);
+          })
+      } 
+
       return
     }
 
-    setNewNumber('');
-    setNewName('');
-    const newPersons = persons.concat(person);
-    setPersons(newPersons)
-    setShowPersons(newPersons)
+    peopleService
+      .create(person)
+      .then(returnPerson => {
+        setNewNumber('');
+        setNewName('');
+        const updatedPeople = people.concat(person);
+        setPeople(updatedPeople)
+        setShowPeople(updatedPeople)
+      })
+      .catch(error => {
+        console.log(error);
+      })
   }
 
   const SearchPersons = (event) => {
@@ -53,7 +78,7 @@ const App = () => {
     const searchValue = event.target.value;
     
     setNewSearch(searchValue);
-    setShowPersons(persons.filter(p => p.name.toLowerCase().includes(searchValue)))
+    setShowPeople(people.filter(p => p.name.toLowerCase().includes(searchValue)))
   }
 
   const handleNameCHange = (event) => {
@@ -62,6 +87,22 @@ const App = () => {
 
   const handleNumberCHange = (event) => {
     setNewNumber(event.target.value)
+  }
+
+  const removePerson = (person) => {
+    const id = person.id
+    if (window.confirm(`Delete ${person.name}`)) {
+      peopleService
+      .remove(id)
+      .then(() => {
+        const newPersons = people.filter(p => p.id !== id);
+        setPeople(newPersons)
+        setShowPeople(newPersons)
+      })
+      .catch(error => {
+        console.log(error);
+      })
+    }
   }
 
   return (
@@ -76,7 +117,7 @@ const App = () => {
       <h3>add a new</h3>
 
       <Form 
-        updatePersons={updatePersons}
+        createPerson={createPerson}
         newName={newName}
         newNumber={newNumber}
         handleNameCHange={handleNameCHange}
@@ -86,7 +127,8 @@ const App = () => {
       <h3>Numbers</h3>
 
       <Phonebook 
-        persons={showPersons}
+        persons={showPeople}
+        removePerson={removePerson}
       />
       
     </div>
