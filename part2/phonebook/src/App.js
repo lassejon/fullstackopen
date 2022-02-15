@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import Filter from "./components/Filter"
 import Form from "./components/Form"
 import Phonebook from "./components/Phonebook"
+import Notification from "./components/Notification"
 import peopleService from "./services/people"
 
 const App = () => {
@@ -11,6 +12,7 @@ const App = () => {
   const [newNumber, setNewNumber] = useState('')
   const [newSearch, setNewSearch] = useState('')
   const [showPeople, setShowPeople] = useState(people)
+  const [message, setMessage] = useState(null)
 
   useEffect(() => {
     peopleService
@@ -47,11 +49,17 @@ const App = () => {
             const updatedPeople = people.map(p => p.id !== person.id ? p : returnedPerson)
             setPeople(updatedPeople)
             setShowPeople(updatedPeople)
+            setMessage(`${returnedPerson.name} was updated`)
+            setTimeout(() => {
+              setMessage(null)
+            }, 5000)
           })
           .catch(error => {
-            console.log(samePerson)
-            console.log(person);
             console.log(error);
+            setMessage(`${person.name} has already been removed from server`)
+            setTimeout(() => {
+              setMessage(null)
+            }, 5000)
           })
       } 
 
@@ -66,9 +74,17 @@ const App = () => {
         const updatedPeople = people.concat(person);
         setPeople(updatedPeople)
         setShowPeople(updatedPeople)
+        setMessage(`${returnPerson.name} was created and added`)
+        setTimeout(() => {
+          setMessage(null)
+        }, 5000)
       })
       .catch(error => {
         console.log(error);
+        setMessage("dasd", `${person.name} has already been removed from server`)
+        setTimeout(() => {
+          setMessage(null)
+        }, 5000)
       })
   }
 
@@ -98,9 +114,17 @@ const App = () => {
         const newPersons = people.filter(p => p.id !== id);
         setPeople(newPersons)
         setShowPeople(newPersons)
+        setMessage(`${person.name} was removed`)
+        setTimeout(() => {
+          setMessage(null)
+        }, 5000)
       })
       .catch(error => {
         console.log(error);
+        setMessage(`${person.name} has already been removed from server`)
+        setTimeout(() => {
+          setMessage(null)
+        }, 5000)
       })
     }
   }
@@ -108,6 +132,7 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
+      <Notification message={message} />
       
       <Filter 
         newSearch={newSearch}
