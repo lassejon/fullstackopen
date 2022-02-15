@@ -11,17 +11,39 @@ const Country = ( { country, countries, setShowCountries } ) => {
     setShowCountries(countries)
   }
 
-  const [weather, setWeather] = useState({});
+  const [weather, setWeather] = useState();
   
-  const get = () => {
+  useEffect(() => {
+    const name = country.name.common
     axios
-    .get(`https://api.openweathermap.org/data/2.5/weather?q=${country.name.common}&appid=${process.env.REACT_APP_OPEN_WEATHER_API_KEY}`)
+    .get(`https://api.openweathermap.org/data/2.5/weather?q=${name}&appid=${process.env.REACT_APP_OPEN_WEATHER_API_KEY}`)
     .then(response => {
       setWeather(response.data);
     })
+  }, [])
+
+  const weatherComponent = () => {
+    if (weather === undefined) {
+      return <div></div>
+    }
+
+    const temperatureConverter = (temp) => {
+      return (temp - 273.15).toFixed(2)
+    }
+
+    const iconId = weather.weather[0].icon;
+    const temperature = temperatureConverter(weather.main.temp)
+    const windSpeed = weather.wind.speed;
+
+    return (
+      <>
+        <div>temperature {temperature} celsius</div>
+        <img src={`http://openweathermap.org/img/wn/${iconId}@2x.png`} alt="weather-icon"></img>
+        <div>wind {windSpeed} m/s</div>
+      </>
+    )
   }
 
-  useEffect(get, []);
 
   return (
     <div>
@@ -35,7 +57,7 @@ const Country = ( { country, countries, setShowCountries } ) => {
       </ul>
       <img src={country.flags.png} alt="flag"></img>
       <h1>Weather in {country.capital}</h1>
-      <div>temperature {weather.weather}</div>
+      {weatherComponent()}
     </div>
   )
 }
