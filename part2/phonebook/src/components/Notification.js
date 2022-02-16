@@ -34,7 +34,6 @@ const Notification = ({ message }) => {
   let messageStyle;
 
   if (message.toLowerCase().includes('remove')) {
-    console.log();
     messageStyle = deleteStyle
   }
 
