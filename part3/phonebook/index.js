@@ -3,12 +3,12 @@ const {request, response} = require("express");
 const app = express()
 const morgan = require('morgan')
 
-morgan.token('data', (req, res) => {
+morgan.token('body', (req, res) => {
     return JSON.stringify(req.body);
 })
 
 app.use(express.json())
-app.use(morgan(':method :url :status :res[content-length] - :response-time ms :data'))
+app.use(morgan(':method :url :status :res[content-length] - :response-time ms :body'))
 
 
 let persons =
@@ -64,7 +64,8 @@ app.get('/api/persons/:id', (request, response) => {
 })
 
 // DELETE
-app.delete('/api/persons/:id', (request, response) => {
+app.delete('/api/persons/:id',
+    (request, response) => {
     const id = Number(request.params.id)
     persons = persons.filter(p => p.id !== id)
 
@@ -83,7 +84,8 @@ const generateId = (max) => {
 }
 
 
-app.post('/api/persons', (request, response) => {
+app.post('/api/persons',
+    (request, response) => {
     const body = request.body;
 
     if(!body.name || !body.number) {
